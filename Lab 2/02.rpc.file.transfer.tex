@@ -1,0 +1,80 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{xcolor}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{RPC File transfer}
+\author{Do Viet Anh BI12-024}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Service Definition (file\_transfer.proto)}
+The RPC service is delineated utilizing the Protocol Buffers (protobuf) language. It outlines the FileTransfer service equipped with two RPC methods: SendFile and ReceiveFile. SendFile accepts a FileRequest message encompassing the filename and file content as input, and yields a FileResponse denoting success or failure. Conversely, ReceiveFile receives a FileChunk message containing file content as input and furnishes an Empty message in return.
+
+\section{Message Definitions}
+The service uses custom message types like FileRequest, FileResponse, and FileChunk to exchange data between client and server. FileRequest contains the filename and content to be sent, FileResponse indicates the success status of the file transfer operation, and FileChunk carries chunks of file content during transmission.
+
+\section{Organization of System}
+
+\subsection{Server-side Organization}
+\begin{itemize}
+    \item \textbf{Server Code (server.cpp)}: The server code initializes a gRPC server, registers the FileTransfer service implementation, and listens for incoming requests. It defines a FileTransferServiceImpl class that implements the RPC methods SendFile and ReceiveFile. Each method handles file transfer operations on the server-side, such as writing received files to disk.
+\end{itemize}
+
+\subsection{Client-side Organization}
+\begin{itemize}
+    \item \textbf{Client Code (client.cpp)}: The client code establishes a connection with the server using gRPC. It defines a FileTransferClient class that encapsulates the gRPC stub and provides methods to send and receive files. The client sends the file to the server using SendFile and receives the file from the server using ReceiveFile.
+\end{itemize}
+
+\section{Implementation of File Transfer}
+
+\subsection{Sending File (SendFile RPC)}
+\begin{enumerate}
+    \item The client reads the content of the file to be sent and constructs a FileRequest message containing the filename and content.
+    \item The client calls the SendFile RPC method on the server, passing the FileRequest message.
+    \item On the server-side, the FileTransferServiceImpl receives the FileRequest, extracts the filename and content, and writes the content to a file on the server's disk.
+    \item After successful writing, the server sends back a FileResponse indicating the success status to the client.
+\end{enumerate}
+
+\subsection{Receiving File (ReceiveFile RPC)}
+\begin{enumerate}
+    \item The server listens for incoming FileChunk messages from the client.
+    \item The client reads the content of the file to be sent in chunks and constructs FileChunk messages.
+    \item The client calls the ReceiveFile RPC method on the server, passing FileChunk messages containing file content.
+    \item On the server-side, the FileTransferServiceImpl receives the FileChunk messages, extracts the content, and appends it to the file being received.
+    \item After receiving all chunks, the server sends back an Empty response to the client.
+\end{enumerate}
+
+\end{document}
+
