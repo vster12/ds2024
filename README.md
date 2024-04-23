@@ -11,4 +11,4 @@ Student Info
 
 * Student Name: Do Viet Anh
 * Student ID: BI12-024
-* Student Group ID: Not-for-now
+* Student Group ID: 02
